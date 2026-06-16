@@ -76,16 +76,16 @@ AUTH_GOOGLE_SECRET="YOUR_GOOGLE_CLIENT_SECRET"
 DATABASE_URL="file:/var/www/operiq/data/operiq.db"
 ```
 
-In Google Cloud Console, configure the OAuth consent screen and add this authorized redirect URI:
-
-```text
-http://YOUR_DOMAIN_OR_IP/api/auth/callback/google
-```
-
-After DNS and HTTPS are configured, add the HTTPS callback too:
+Google OAuth does not accept a public IP address as an authorized redirect URI for a web client. Point a real domain to the Droplet first, then configure the OAuth consent screen and add this authorized redirect URI:
 
 ```text
 https://YOUR_DOMAIN/api/auth/callback/google
+```
+
+For local development only, Google also allows localhost callbacks:
+
+```text
+http://localhost:3000/api/auth/callback/google
 ```
 
 Then install, migrate, and build:
@@ -114,7 +114,7 @@ Create a site config:
 sudo nano /etc/nginx/sites-available/operiq
 ```
 
-Paste this config, replacing `YOUR_DOMAIN_OR_IP`:
+Paste this config, replacing `YOUR_DOMAIN_OR_IP`. Use the real domain once DNS is ready:
 
 ```nginx
 server {

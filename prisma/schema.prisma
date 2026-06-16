@@ -59,7 +59,12 @@ model Project {
   name             String
   description      String?
   signal           String   @default("watch")
+  businessOwner    String?
+  reviewCadence    String   @default("weekly")
   nextReview       String?
+  keyDecision      String?
+  riskHypothesis   String?
+  successCondition String?
   executiveSummary String?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
