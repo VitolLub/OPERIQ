@@ -55,7 +55,44 @@ sudo mkdir -p operiq
 sudo chown deploy:deploy operiq
 git clone YOUR_REPOSITORY_URL operiq
 cd operiq
+mkdir -p data
+cp .env.example .env
+openssl rand -base64 33
+```
+
+Edit `.env` before installing dependencies:
+
+```bash
+nano .env
+```
+
+Use these values, replacing the Google values and the secret:
+
+```bash
+AUTH_SECRET="PASTE_OPENSSL_VALUE_HERE"
+AUTH_TRUST_HOST=true
+AUTH_GOOGLE_ID="YOUR_GOOGLE_CLIENT_ID"
+AUTH_GOOGLE_SECRET="YOUR_GOOGLE_CLIENT_SECRET"
+DATABASE_URL="file:/var/www/operiq/data/operiq.db"
+```
+
+In Google Cloud Console, configure the OAuth consent screen and add this authorized redirect URI:
+
+```text
+http://YOUR_DOMAIN_OR_IP/api/auth/callback/google
+```
+
+After DNS and HTTPS are configured, add the HTTPS callback too:
+
+```text
+https://YOUR_DOMAIN/api/auth/callback/google
+```
+
+Then install, migrate, and build:
+
+```bash
 npm install
+npm run db:deploy
 npm run build
 ```
 
@@ -127,6 +164,7 @@ sudo certbot --nginx -d YOUR_DOMAIN
 cd /var/www/operiq
 git pull
 npm install
+npm run db:deploy
 npm run build
 pm2 restart operiq
 ```

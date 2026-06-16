@@ -1,11 +1,15 @@
 import { Bell, Search } from "lucide-react";
+import { auth } from "@/auth";
+import { SignOutButton } from "@/components/SignOutButton";
 
 type TopBarProps = {
   title: string;
   description: string;
 };
 
-export function TopBar({ title, description }: TopBarProps) {
+export async function TopBar({ title, description }: TopBarProps) {
+  const session = await auth();
+
   return (
     <header className="sticky top-0 z-20 border-b border-field-200 bg-white/92 px-4 py-4 backdrop-blur md:px-6">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
@@ -29,6 +33,16 @@ export function TopBar({ title, description }: TopBarProps) {
           >
             <Bell size={18} aria-hidden="true" />
           </button>
+          {session?.user ? (
+            <div className="hidden items-center gap-3 border-l border-field-200 pl-3 md:flex">
+              <div className="text-right">
+                <p className="text-sm font-medium text-ink-950">{session.user.name ?? "Operator"}</p>
+                <p className="text-xs text-ink-600">{session.user.email}</p>
+              </div>
+              <SignOutButton />
+            </div>
+          ) : null}
+          {session?.user ? <div className="md:hidden"><SignOutButton /></div> : null}
         </div>
       </div>
     </header>
