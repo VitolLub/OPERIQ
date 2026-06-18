@@ -1,6 +1,7 @@
 import { BellRing, SlidersHorizontal, UserRoundCog } from "lucide-react";
 import { DashboardSection } from "@/components/DashboardSection";
 import { TopBar } from "@/components/TopBar";
+import { getTranslations } from "@/lib/locale";
 
 const settings = [
   {
@@ -20,12 +21,14 @@ const settings = [
   },
 ];
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  const t = await getTranslations();
+
   return (
     <>
       <TopBar
-        title="Settings"
-        description="Configuration surfaces for the mock product shell. No accounts, authentication, or integrations are implemented."
+        title={t.commonPages.settingsTitle}
+        description={t.commonPages.settingsDescription}
       />
       <div className="px-4 py-6 md:px-6">
         <DashboardSection title="Product Configuration">

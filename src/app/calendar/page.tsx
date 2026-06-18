@@ -2,13 +2,16 @@ import { CalendarPreview } from "@/components/CalendarPreview";
 import { DashboardSection } from "@/components/DashboardSection";
 import { TopBar } from "@/components/TopBar";
 import { mockCalendar } from "@/lib/mock-calendar";
+import { getTranslations } from "@/lib/locale";
 
-export default function CalendarPage() {
+export default async function CalendarPage() {
+  const t = await getTranslations();
+
   return (
     <>
       <TopBar
-        title="Calendar Pressure"
-        description="Upcoming meetings and protected windows that influence risk handling and decision timing."
+        title={t.commonPages.calendarTitle}
+        description={t.commonPages.calendarDescription}
       />
       <div className="grid gap-6 px-4 py-6 md:px-6 xl:grid-cols-[1fr_22rem]">
         <CalendarPreview events={mockCalendar} />

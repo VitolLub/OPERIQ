@@ -1,6 +1,7 @@
 import { FileCheck2, FileWarning, ShieldCheck } from "lucide-react";
 import { DashboardSection } from "@/components/DashboardSection";
 import { TopBar } from "@/components/TopBar";
+import { getTranslations } from "@/lib/locale";
 
 const documents = [
   {
@@ -23,12 +24,14 @@ const documents = [
   },
 ];
 
-export default function DocumentsPage() {
+export default async function DocumentsPage() {
+  const t = await getTranslations();
+
   return (
     <>
       <TopBar
-        title="Document Signals"
-        description="Readiness indicators for briefing materials, decision notes, and operational context documents."
+        title={t.commonPages.documentsTitle}
+        description={t.commonPages.documentsDescription}
       />
       <div className="px-4 py-6 md:px-6">
         <DashboardSection title="Briefing Material Readiness">

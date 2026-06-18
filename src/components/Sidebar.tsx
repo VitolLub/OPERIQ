@@ -11,19 +11,24 @@ import {
   Sparkles,
   Waypoints,
 } from "lucide-react";
+import { getDictionary, type Locale } from "@/lib/i18n";
 import type { NavigationItem } from "@/types/domain";
 
-const navigationItems: NavigationItem[] = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/projects", label: "Projects", icon: Waypoints },
-  { href: "/actions", label: "Actions", icon: Sparkles },
-  { href: "/documents", label: "Documents", icon: FileText },
-  { href: "/calendar", label: "Calendar", icon: CalendarDays },
-  { href: "/settings", label: "Settings", icon: Settings },
-];
+type SidebarProps = {
+  locale: Locale;
+};
 
-export function Sidebar() {
+export function Sidebar({ locale }: SidebarProps) {
   const pathname = usePathname();
+  const t = getDictionary(locale);
+  const navigationItems: NavigationItem[] = [
+    { href: "/dashboard", label: t.shell.nav.dashboard, icon: LayoutDashboard },
+    { href: "/projects", label: t.shell.nav.projects, icon: Waypoints },
+    { href: "/actions", label: t.shell.nav.actions, icon: Sparkles },
+    { href: "/documents", label: t.shell.nav.documents, icon: FileText },
+    { href: "/calendar", label: t.shell.nav.calendar, icon: CalendarDays },
+    { href: "/settings", label: t.shell.nav.settings, icon: Settings },
+  ];
 
   return (
     <>
@@ -34,7 +39,7 @@ export function Sidebar() {
           </div>
           <div>
             <p className="text-sm font-semibold text-ink-950">Operiq</p>
-            <p className="text-xs text-ink-600">Operational Intelligence</p>
+            <p className="text-xs text-ink-600">{t.shell.productSubtitle}</p>
           </div>
         </Link>
 
@@ -61,10 +66,10 @@ export function Sidebar() {
         </nav>
 
         <div className="mt-auto rounded-md border border-field-200 bg-field-50 p-3">
-          <p className="text-xs font-semibold uppercase text-ink-600">Briefing State</p>
-          <p className="mt-2 text-sm font-medium text-ink-950">3 risk signals need review</p>
+          <p className="text-xs font-semibold uppercase text-ink-600">{t.shell.briefingState}</p>
+          <p className="mt-2 text-sm font-medium text-ink-950">{t.shell.briefingStateSummary}</p>
           <p className="mt-1 text-xs leading-5 text-ink-600">
-            Updated from mock operational data. No integrations connected.
+            {t.shell.briefingStateBody}
           </p>
         </div>
       </aside>

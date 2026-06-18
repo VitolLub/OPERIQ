@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { auth } from "@/auth";
+import { hasAppAccess } from "@/lib/access";
+import { getLocale } from "@/lib/locale";
 import { Sidebar } from "@/components/Sidebar";
 import { SignInPanel } from "@/components/SignInPanel";
 
@@ -14,14 +15,14 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await auth();
+  const [hasAccess, locale] = await Promise.all([hasAppAccess(), getLocale()]);
 
   return (
-    <html lang="en">
+    <html lang={locale}>
       <body>
-        {session?.user ? (
+        {hasAccess ? (
           <div className="flex min-h-screen bg-field-50">
-            <Sidebar />
+            <Sidebar locale={locale} />
             <main className="min-w-0 flex-1 pb-20 lg:pb-0">{children}</main>
           </div>
         ) : (

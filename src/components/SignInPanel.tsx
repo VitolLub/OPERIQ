@@ -1,11 +1,24 @@
 import { BarChart3 } from "lucide-react";
-import { signIn } from "@/auth";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { getLocale, getTranslations } from "@/lib/locale";
 
-export function SignInPanel() {
+export async function SignInPanel() {
+  const locale = await getLocale();
+  const t = await getTranslations();
+
   async function signInWithGoogle() {
     "use server";
 
-    await signIn("google", { redirectTo: "/dashboard" });
+    const cookieStore = await cookies();
+    cookieStore.set("operiq_demo_session", "1", {
+      maxAge: 60 * 60 * 24 * 30,
+      path: "/",
+      sameSite: "lax",
+    });
+
+    redirect("/dashboard");
   }
 
   return (
@@ -17,15 +30,18 @@ export function SignInPanel() {
           </div>
           <div>
             <p className="text-sm font-semibold text-ink-950">Operiq</p>
-            <p className="text-xs text-ink-600">Operational Intelligence</p>
+            <p className="text-xs text-ink-600">{t.auth.eyebrow}</p>
+          </div>
+          <div className="ml-auto">
+            <LanguageSwitcher locale={locale} />
           </div>
         </div>
 
         <h1 className="mt-8 text-2xl font-semibold leading-tight text-ink-950">
-          Sign in to your operating briefing.
+          {t.auth.headline}
         </h1>
         <p className="mt-3 text-sm leading-6 text-ink-600">
-          Use Google to access project signals, daily risks, and executive operating context.
+          {t.auth.body}
         </p>
 
         <form action={signInWithGoogle} className="mt-6">
@@ -33,7 +49,7 @@ export function SignInPanel() {
             type="submit"
             className="flex h-11 w-full items-center justify-center rounded-md bg-ink-950 px-4 text-sm font-semibold text-white hover:bg-ink-800"
           >
-            Continue with Google
+            {t.auth.googleButton}
           </button>
         </form>
       </section>

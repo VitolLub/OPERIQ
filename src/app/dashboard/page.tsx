@@ -8,6 +8,7 @@ import {
   nextFourWeeks,
   processedInformation,
 } from "@/lib/mock-dashboard";
+import { getTranslations } from "@/lib/locale";
 
 const horizonStyles: Record<string, string> = {
   critical: "bg-red-50 text-signal-red",
@@ -21,7 +22,8 @@ const priorityStyles: Record<string, string> = {
   normal: "text-signal-blue",
 };
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const t = await getTranslations();
   const primaryRisk = dashboardCriticalRisks[0];
   const supportingRisks = dashboardCriticalRisks.slice(1);
   const primaryAction = dashboardTodayActions[0];
@@ -30,43 +32,44 @@ export default function DashboardPage() {
   return (
     <>
       <TopBar
-        title="Daily Operating Brief"
-        description="A calm executive view of the decisions, risks, and timing pressure that matter today."
+        title={t.dashboard.topbarTitle}
+        description={t.dashboard.topbarDescription}
+        eyebrow={t.dashboard.topbarEyebrow}
       />
 
       <div className="mx-auto max-w-7xl space-y-10 px-4 py-6 md:px-6">
         <section className="rounded-lg border border-field-200 bg-white p-6 shadow-panel">
           <div className="max-w-4xl">
-            <p className="text-xs font-semibold uppercase text-signal-blue">AI Chief Operating Officer</p>
+            <p className="text-xs font-semibold uppercase text-signal-blue">{t.dashboard.heroEyebrow}</p>
             <h2 className="mt-3 text-2xl font-semibold leading-tight text-ink-950">
-              Today is about protecting decision quality before the operating week tightens.
+              {t.dashboard.heroTitle}
             </h2>
             <p className="mt-4 text-sm leading-6 text-ink-600">
-              Renewal pricing, executive approval capacity, and customer response alignment are now connected.
-              The most valuable move is to resolve the pricing guardrails first, then use that clarity to
-              simplify the rest of the day.
+              {t.dashboard.heroBody}
             </p>
           </div>
         </section>
 
         <DashboardSection
-          title="Critical Risks"
-          description="Only the risks that can materially change today's operating posture."
+          title={t.dashboard.criticalRisksTitle}
+          description={t.dashboard.criticalRisksDescription}
         >
           <div className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
             <article className="rounded-lg border border-signal-red/30 bg-white p-5 shadow-panel">
               <div className="flex items-center justify-between gap-4">
                 <span className="rounded-md bg-red-50 px-2 py-1 text-xs font-semibold uppercase text-signal-red">
-                  Primary risk
+                  {t.dashboard.primaryRisk}
                 </span>
-                <span className="text-xs font-medium text-ink-600">{primaryRisk.confidence}% confidence</span>
+                <span className="text-xs font-medium text-ink-600">
+                  {primaryRisk.confidence}% {t.dashboard.confidence}
+                </span>
               </div>
               <h3 className="mt-4 text-lg font-semibold leading-7 text-ink-950">{primaryRisk.title}</h3>
               <p className="mt-3 text-sm leading-6 text-ink-600">{primaryRisk.impact}</p>
               <div className="mt-5 rounded-md bg-field-50 p-4">
-                <p className="text-xs font-semibold uppercase text-ink-600">Executive implication</p>
+                <p className="text-xs font-semibold uppercase text-ink-600">{t.dashboard.executiveImplication}</p>
                 <p className="mt-2 text-sm leading-6 text-ink-800">
-                  Do not let the commercial review proceed until the approved range and fallback position are clear.
+                  {t.dashboard.executiveImplicationBody}
                 </p>
               </div>
             </article>
@@ -88,8 +91,8 @@ export default function DashboardPage() {
         </DashboardSection>
 
         <DashboardSection
-          title="Next 4 Weeks"
-          description="A forward view of where pressure is building, kept intentionally brief."
+          title={t.dashboard.nextFourWeeksTitle}
+          description={t.dashboard.nextFourWeeksDescription}
         >
           <div className="grid gap-3 lg:grid-cols-4">
             {nextFourWeeks.map((item) => (
@@ -109,8 +112,8 @@ export default function DashboardPage() {
 
         <section className="grid gap-8 xl:grid-cols-[0.9fr_1.1fr]">
           <DashboardSection
-            title="This Calendar Week"
-            description="The operating rhythm, without a calendar grid."
+            title={t.dashboard.calendarWeekTitle}
+            description={t.dashboard.calendarWeekDescription}
           >
             <div className="rounded-lg border border-field-200 bg-white p-4 shadow-panel">
               <div className="space-y-4">
@@ -131,15 +134,15 @@ export default function DashboardPage() {
           </DashboardSection>
 
           <DashboardSection
-            title="Today"
-            description="The few moves that deserve attention now."
+            title={t.dashboard.todayTitle}
+            description={t.dashboard.todayDescription}
           >
             <div className="rounded-lg border border-field-200 bg-white p-5 shadow-panel">
               <div className="border-b border-field-200 pb-5">
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <p className={`text-xs font-semibold uppercase ${priorityStyles[primaryAction.priority]}`}>
-                      First move
+                      {t.dashboard.firstMove}
                     </p>
                     <h3 className="mt-2 text-lg font-semibold leading-7 text-ink-950">{primaryAction.title}</h3>
                   </div>
@@ -165,8 +168,8 @@ export default function DashboardPage() {
         </section>
 
         <DashboardSection
-          title="Processed Information"
-          description="Quiet provenance for the briefing, shown as confidence context rather than operational noise."
+          title={t.dashboard.processedTitle}
+          description={t.dashboard.processedDescription}
         >
           <div className="rounded-lg border border-field-200 bg-white p-5 shadow-panel">
             <div className="grid gap-4 md:grid-cols-4">

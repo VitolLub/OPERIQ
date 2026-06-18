@@ -1,9 +1,10 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { Plus, Radar } from "lucide-react";
-import { auth } from "@/auth";
 import { DashboardSection } from "@/components/DashboardSection";
 import { TopBar } from "@/components/TopBar";
+import { getCurrentOperator } from "@/lib/access";
+import { getTranslations } from "@/lib/locale";
 import { prisma } from "@/lib/prisma";
 
 const signalStyles: Record<string, string> = {
@@ -16,9 +17,9 @@ const signalStyles: Record<string, string> = {
 async function createProject(formData: FormData) {
   "use server";
 
-  const session = await auth();
+  const operator = await getCurrentOperator();
 
-  if (!session?.user?.id) {
+  if (!operator?.id) {
     redirect("/");
   }
 
@@ -48,7 +49,7 @@ async function createProject(formData: FormData) {
       riskHypothesis: riskHypothesis || null,
       successCondition: successCondition || null,
       executiveSummary: description,
-      ownerId: session.user.id,
+      ownerId: operator.id,
     },
   });
 
@@ -56,15 +57,15 @@ async function createProject(formData: FormData) {
 }
 
 export default async function ProjectsPage() {
-  const session = await auth();
+  const [operator, t] = await Promise.all([getCurrentOperator(), getTranslations()]);
 
-  if (!session?.user?.id) {
+  if (!operator?.id) {
     redirect("/");
   }
 
   const projects = await prisma.project.findMany({
     where: {
-      ownerId: session.user.id,
+      ownerId: operator.id,
     },
     orderBy: {
       updatedAt: "desc",
@@ -74,13 +75,13 @@ export default async function ProjectsPage() {
   return (
     <>
       <TopBar
-        title="Project Signals"
-        description="Create and monitor initiatives as operating signals for executive attention and decision support."
+        title={t.projects.topbarTitle}
+        description={t.projects.topbarDescription}
       />
       <div className="space-y-8 px-4 py-6 md:px-6">
         <DashboardSection
-          title="Create Project"
-          description="Capture the operating context Operiq should monitor and elevate in future briefings."
+          title={t.projects.createTitle}
+          description={t.projects.createDescription}
         >
           <form
             action={createProject}
@@ -88,28 +89,28 @@ export default async function ProjectsPage() {
           >
             <div className="grid gap-4 lg:grid-cols-[1fr_1.4fr_14rem]">
               <label className="grid gap-2">
-                <span className="text-xs font-semibold uppercase text-ink-600">Project name</span>
+                <span className="text-xs font-semibold uppercase text-ink-600">{t.projects.projectName}</span>
                 <input
                   name="name"
                   required
-                  placeholder="Enterprise renewal cycle"
+                  placeholder={t.projects.projectNamePlaceholder}
                   className="h-10 rounded-md border border-field-200 bg-field-50 px-3 text-sm text-ink-950 outline-none focus:border-signal-blue"
                 />
               </label>
               <label className="grid gap-2">
-                <span className="text-xs font-semibold uppercase text-ink-600">Operating context</span>
+                <span className="text-xs font-semibold uppercase text-ink-600">{t.projects.operatingContext}</span>
                 <input
                   name="description"
                   required
-                  placeholder="Pricing, approvals, and stakeholder expectations are converging."
+                  placeholder={t.projects.operatingContextPlaceholder}
                   className="h-10 rounded-md border border-field-200 bg-field-50 px-3 text-sm text-ink-950 outline-none focus:border-signal-blue"
                 />
               </label>
               <label className="grid gap-2">
-                <span className="text-xs font-semibold uppercase text-ink-600">Business owner</span>
+                <span className="text-xs font-semibold uppercase text-ink-600">{t.projects.businessOwner}</span>
                 <input
                   name="businessOwner"
-                  placeholder="Commercial lead"
+                  placeholder={t.projects.businessOwnerPlaceholder}
                   className="h-10 rounded-md border border-field-200 bg-field-50 px-3 text-sm text-ink-950 outline-none focus:border-signal-blue"
                 />
               </label>
@@ -117,32 +118,32 @@ export default async function ProjectsPage() {
 
             <div className="grid gap-4 md:grid-cols-3">
               <label className="grid gap-2">
-                <span className="text-xs font-semibold uppercase text-ink-600">Current signal</span>
+                <span className="text-xs font-semibold uppercase text-ink-600">{t.projects.currentSignal}</span>
                 <select
                   name="signal"
                   defaultValue="watch"
                   className="h-10 rounded-md border border-field-200 bg-field-50 px-3 text-sm text-ink-950 outline-none focus:border-signal-blue"
                 >
-                  <option value="stable">Stable</option>
-                  <option value="watch">Watch</option>
-                  <option value="at-risk">At risk</option>
-                  <option value="critical">Critical</option>
+                  <option value="stable">{t.projects.signals.stable}</option>
+                  <option value="watch">{t.projects.signals.watch}</option>
+                  <option value="at-risk">{t.projects.signals["at-risk"]}</option>
+                  <option value="critical">{t.projects.signals.critical}</option>
                 </select>
               </label>
               <label className="grid gap-2">
-                <span className="text-xs font-semibold uppercase text-ink-600">Review cadence</span>
+                <span className="text-xs font-semibold uppercase text-ink-600">{t.projects.reviewCadence}</span>
                 <select
                   name="reviewCadence"
                   defaultValue="weekly"
                   className="h-10 rounded-md border border-field-200 bg-field-50 px-3 text-sm text-ink-950 outline-none focus:border-signal-blue"
                 >
-                  <option value="daily">Daily</option>
-                  <option value="weekly">Weekly</option>
-                  <option value="critical-only">Critical only</option>
+                  <option value="daily">{t.projects.cadences.daily}</option>
+                  <option value="weekly">{t.projects.cadences.weekly}</option>
+                  <option value="critical-only">{t.projects.cadences["critical-only"]}</option>
                 </select>
               </label>
               <label className="grid gap-2">
-                <span className="text-xs font-semibold uppercase text-ink-600">Next review date</span>
+                <span className="text-xs font-semibold uppercase text-ink-600">{t.projects.nextReviewDate}</span>
                 <input
                   name="nextReview"
                   type="date"
@@ -153,29 +154,29 @@ export default async function ProjectsPage() {
 
             <div className="grid gap-4 lg:grid-cols-3">
               <label className="grid gap-2">
-                <span className="text-xs font-semibold uppercase text-ink-600">Key decision needed</span>
+                <span className="text-xs font-semibold uppercase text-ink-600">{t.projects.keyDecision}</span>
                 <textarea
                   name="keyDecision"
                   rows={3}
-                  placeholder="Confirm pricing guardrails before the renewal review."
+                  placeholder={t.projects.keyDecisionPlaceholder}
                   className="resize-none rounded-md border border-field-200 bg-field-50 px-3 py-2 text-sm leading-6 text-ink-950 outline-none focus:border-signal-blue"
                 />
               </label>
               <label className="grid gap-2">
-                <span className="text-xs font-semibold uppercase text-ink-600">Risk hypothesis</span>
+                <span className="text-xs font-semibold uppercase text-ink-600">{t.projects.riskHypothesis}</span>
                 <textarea
                   name="riskHypothesis"
                   rows={3}
-                  placeholder="Approval delays may compress the negotiation window."
+                  placeholder={t.projects.riskHypothesisPlaceholder}
                   className="resize-none rounded-md border border-field-200 bg-field-50 px-3 py-2 text-sm leading-6 text-ink-950 outline-none focus:border-signal-blue"
                 />
               </label>
               <label className="grid gap-2">
-                <span className="text-xs font-semibold uppercase text-ink-600">Success condition</span>
+                <span className="text-xs font-semibold uppercase text-ink-600">{t.projects.successCondition}</span>
                 <textarea
                   name="successCondition"
                   rows={3}
-                  placeholder="Executive owner confirms decision path and next review window."
+                  placeholder={t.projects.successConditionPlaceholder}
                   className="resize-none rounded-md border border-field-200 bg-field-50 px-3 py-2 text-sm leading-6 text-ink-950 outline-none focus:border-signal-blue"
                 />
               </label>
@@ -187,15 +188,15 @@ export default async function ProjectsPage() {
                 className="flex h-10 w-full items-center justify-center gap-2 rounded-md bg-ink-950 px-4 text-sm font-semibold text-white hover:bg-ink-800 sm:w-auto"
               >
                 <Plus size={16} aria-hidden="true" />
-                Create
+                {t.projects.createButton}
               </button>
             </div>
           </form>
         </DashboardSection>
 
         <DashboardSection
-          title="Active Intelligence"
-          description="Projects are shown as operating signals with owner, cadence, decision, and risk context."
+          title={t.projects.activeTitle}
+          description={t.projects.activeDescription}
         >
           {projects.length > 0 ? (
             <div className="grid gap-4 xl:grid-cols-3">
@@ -207,10 +208,10 @@ export default async function ProjectsPage() {
                         signalStyles[project.signal] ?? signalStyles.watch
                       }`}
                     >
-                      {project.signal}
+                      {t.projects.signals[project.signal] ?? project.signal}
                     </span>
                     <span className="text-xs text-ink-600">
-                      {project.reviewCadence.replace("-", " ")}
+                      {t.projects.cadences[project.reviewCadence] ?? project.reviewCadence.replace("-", " ")}
                     </span>
                   </div>
                   <h2 className="mt-4 text-base font-semibold text-ink-950">{project.name}</h2>
@@ -219,28 +220,28 @@ export default async function ProjectsPage() {
                   </p>
                   <dl className="mt-4 grid gap-3 border-t border-field-200 pt-3 text-xs leading-5">
                     <div className="grid grid-cols-[7.5rem_1fr] gap-3">
-                      <dt className="font-semibold text-ink-950">Owner</dt>
-                      <dd className="text-ink-600">{project.businessOwner ?? "Unassigned"}</dd>
+                      <dt className="font-semibold text-ink-950">{t.projects.owner}</dt>
+                      <dd className="text-ink-600">{project.businessOwner ?? t.projects.unassigned}</dd>
                     </div>
                     <div className="grid grid-cols-[7.5rem_1fr] gap-3">
-                      <dt className="font-semibold text-ink-950">Next review</dt>
-                      <dd className="text-ink-600">{project.nextReview ?? "This week"}</dd>
+                      <dt className="font-semibold text-ink-950">{t.projects.nextReview}</dt>
+                      <dd className="text-ink-600">{project.nextReview ?? t.projects.thisWeek}</dd>
                     </div>
                     {project.keyDecision ? (
                       <div>
-                        <dt className="font-semibold text-ink-950">Decision</dt>
+                        <dt className="font-semibold text-ink-950">{t.projects.decision}</dt>
                         <dd className="mt-1 text-ink-600">{project.keyDecision}</dd>
                       </div>
                     ) : null}
                     {project.riskHypothesis ? (
                       <div>
-                        <dt className="font-semibold text-ink-950">Risk hypothesis</dt>
+                        <dt className="font-semibold text-ink-950">{t.projects.riskHypothesis}</dt>
                         <dd className="mt-1 text-ink-600">{project.riskHypothesis}</dd>
                       </div>
                     ) : null}
                     {project.successCondition ? (
                       <div>
-                        <dt className="font-semibold text-ink-950">Success condition</dt>
+                        <dt className="font-semibold text-ink-950">{t.projects.successCondition}</dt>
                         <dd className="mt-1 text-ink-600">{project.successCondition}</dd>
                       </div>
                     ) : null}
@@ -253,9 +254,9 @@ export default async function ProjectsPage() {
               <div className="mx-auto flex size-11 items-center justify-center rounded-md bg-field-100 text-ink-800">
                 <Radar size={20} aria-hidden="true" />
               </div>
-              <h2 className="mt-4 text-base font-semibold text-ink-950">No project signals yet</h2>
+              <h2 className="mt-4 text-base font-semibold text-ink-950">{t.projects.emptyTitle}</h2>
               <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-ink-600">
-                Create the first project to start building an operating view around risks, reviews, and decisions.
+                {t.projects.emptyBody}
               </p>
             </div>
           )}
