@@ -2,7 +2,8 @@ import { cookies } from "next/headers";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
-const demoEmail = "demo@operiq.local";
+const demoEmail = "muharrem.akis@operiq.local";
+const demoName = "Muharrem Akis";
 
 export async function hasAppAccess() {
   const session = await auth();
@@ -37,10 +38,12 @@ export async function getCurrentOperator() {
     where: {
       email: demoEmail,
     },
-    update: {},
+    update: {
+      name: demoName,
+    },
     create: {
       email: demoEmail,
-      name: "Demo Operator",
+      name: demoName,
     },
   });
 
